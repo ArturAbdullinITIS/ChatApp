@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">ChatApp</string>
+    <string name="email_sign_in">Email</string>
+    <string name="enter_your_email_sign_in">Enter your email</string>
+    <string name="password_sign_in">Password</string>
+    <string name="enter_your_password_sign_in">Enter your password</string>
+    <string name="username_sign_in">Username</string>
+    <string name="email_icon_sign_in">Email Icon</string>
+    <string name="password_icon_sign_in">Password Icon</string>
+    <string name="username_icon_sign_up">Username Icon</string>
+    <string name="enter_your_username_sign_up">Enter your username</string>
+    <string name="password_visibility_off">Password Visibility off</string>
+    <string name="password_visibility_on">Password Visibility on</string>
+    <string name="don_t_have_an_account_sign_up">Don\'t have an account? Sign Up</string>
+    <string name="back_icon">Back Icon</string>
 </resources>
