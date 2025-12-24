@@ -7,6 +7,7 @@ import android.widget.Button
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -21,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -38,7 +40,7 @@ import com.example.chatapp.ui.theme.PasswordNotVisible
 fun SignInEmailTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    errorMessage: String
+    errorMessage: String?
 ) {
     OutlinedTextField(
         modifier = Modifier.fillMaxWidth(),
@@ -54,9 +56,9 @@ fun SignInEmailTextField(
                 contentDescription = stringResource(R.string.email_icon_sign_in)
             )
         },
-        isError = errorMessage.isNotEmpty(),
+        isError = errorMessage?.isNotEmpty() ?: false,
         supportingText = {
-            if (errorMessage.isNotEmpty()) {
+            if (errorMessage?.isNotEmpty() ?: false) {
                 Text(errorMessage)
             }
         },
@@ -74,7 +76,7 @@ fun SignInEmailTextField(
 fun SignInPasswordTextField(
     value: String,
     onValueChange: (String) -> Unit,
-    errorMessage: String,
+    errorMessage: String?,
     isPasswordVisible: Boolean,
     onIconClick: () -> Unit
 ) {
@@ -92,9 +94,9 @@ fun SignInPasswordTextField(
                 contentDescription = stringResource(R.string.password_icon_sign_in)
             )
         },
-        isError = errorMessage.isNotEmpty(),
+        isError = errorMessage?.isNotEmpty() ?: false,
         supportingText = {
-            if (errorMessage.isNotEmpty()) {
+            if (errorMessage?.isNotEmpty() ?: false) {
                 Text(errorMessage)
             }
         },
@@ -139,7 +141,8 @@ fun PasswordVisibilityIcon(
 
 @Composable
 fun SignInButton(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean = true
 ) {
     Button(
         modifier = Modifier.fillMaxWidth(),
@@ -147,7 +150,8 @@ fun SignInButton(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary
-        )
+        ),
+        enabled = enabled
     ) {
         Text(
             text = "Sign In",
@@ -181,6 +185,7 @@ fun BackIcon(
     Icon(
         modifier = Modifier
             .size(48.dp)
+            .clip(CircleShape)
             .clickable(onClick = onClick),
         imageVector = ArrowBack,
         contentDescription = stringResource(R.string.back_icon)
