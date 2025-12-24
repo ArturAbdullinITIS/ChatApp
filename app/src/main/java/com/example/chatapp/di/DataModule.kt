@@ -1,8 +1,8 @@
 package com.example.chatapp.di
 
 import android.content.Context
-import androidx.compose.ui.geometry.Rect
-import com.example.chatapp.presentation.utils.ResourceProvider
+import com.example.chatapp.presentation.util.ErrorParser
+import com.example.chatapp.presentation.util.ResourceProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,6 +23,14 @@ interface DataModule {
             @ApplicationContext context: Context
         ): ResourceProvider {
             return ResourceProvider(context)
+        }
+
+        @Provides
+        @Singleton
+        fun provideErrorParser(
+            resourceProvider: ResourceProvider
+        ): ErrorParser {
+            return ErrorParser(resourceProvider)
         }
     }
 }

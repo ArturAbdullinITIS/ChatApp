@@ -106,7 +106,7 @@ fun SignInPasswordTextField(
         },
         visualTransformation = if(!isPasswordVisible) PasswordVisualTransformation() else VisualTransformation.None,
         trailingIcon = {
-            PasswordVisibilityIcon(
+            SignInPasswordVisibilityIcon(
                 isPasswordVisible = isPasswordVisible,
                 onIconClick = onIconClick
             )
@@ -116,7 +116,7 @@ fun SignInPasswordTextField(
 
 
 @Composable
-fun PasswordVisibilityIcon(
+fun SignInPasswordVisibilityIcon(
     isPasswordVisible: Boolean,
     onIconClick: () -> Unit
 ) {
@@ -160,22 +160,6 @@ fun SignInButton(
     }
 }
 
-
-@Composable
-fun CustomClickableText(
-    onClick: () -> Unit,
-) {
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
-        textAlign = TextAlign.Center,
-        text = stringResource(R.string.don_t_have_an_account_sign_up),
-        color = MaterialTheme.colorScheme.secondary,
-        style = MaterialTheme.typography.bodyMedium,
-        textDecoration = TextDecoration.Underline
-    )
-}
 
 
 @Composable
