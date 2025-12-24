@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -70,13 +71,23 @@ fun SignInContent(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
             ){
                 BackIcon(
                     onClick = onNavigateToSignUp
                 )
+
+                Text(
+                    text = "To Sign Up",
+                    modifier = Modifier
+                        .padding(start = 8.dp),
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                )
             }
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(128.dp))
 
             Text(
                 modifier = Modifier.fillMaxWidth(),
@@ -103,7 +114,7 @@ fun SignInContent(
                 },
                 errorMessage = state.emailError
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             SignInPasswordTextField(
                 value = state.password,
                 onValueChange = {
@@ -118,12 +129,18 @@ fun SignInContent(
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
             Spacer(modifier = Modifier.height(24.dp))
-            SignInButton(
-                onClick = {
-                    viewModel.processCommand(SignInCommand.Login)
-                },
-                enabled = !state.isLoading
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                SignInButton(
+                    onClick = {
+                        viewModel.processCommand(SignInCommand.Login)
+                    },
+                    enabled = !state.isLoading
+                )
+            }
+
             if (state.isLoading) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(

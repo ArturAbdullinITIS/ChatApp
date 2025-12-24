@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -74,15 +75,22 @@ fun SignUpContent(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
             ){
+                Text(
+                    text = "To Sign In",
+                    modifier = Modifier
+                        .padding(end = 8.dp),
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp,
+                )
                 ForwardIcon(
-                    onClick = {
-                        onNavigateToSignIn()
-                    }
+                    onClick = onNavigateToSignIn
                 )
             }
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(128.dp))
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
@@ -109,7 +117,7 @@ fun SignUpContent(
                 },
                 errorMessage = state.usernameError
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             SignUpEmailTextField(
                 value = state.email,
                 onValueChange = {
@@ -117,7 +125,7 @@ fun SignUpContent(
                 },
                 errorMessage = state.emailError
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             SignUpPasswordTextField(
                 value = state.password,
                 onValueChange = {
@@ -132,12 +140,18 @@ fun SignUpContent(
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
             Spacer(modifier = Modifier.height(24.dp))
-            SignUpButton(
-                onClick = {
-                    viewModel.processCommand(SignUpCommand.Register)
-                },
-                enabled = !state.isLoading
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ){
+                SignUpButton(
+                    onClick = {
+                        viewModel.processCommand(SignUpCommand.Register)
+                    },
+                    enabled = !state.isLoading
+                )
+            }
+
             if (state.isLoading) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(

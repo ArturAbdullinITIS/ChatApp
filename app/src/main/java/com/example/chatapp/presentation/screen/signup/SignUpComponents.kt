@@ -1,5 +1,6 @@
 package com.example.chatapp.presentation.screen.signup
 
+import android.R.attr.height
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
@@ -173,13 +174,17 @@ fun SignUpButton(
     enabled: Boolean = true
 ) {
     Button(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .size(
+                height = 48.dp,
+                width = 300.dp
+            ),
         shape = RoundedCornerShape(24.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary
         ),
-        enabled = enabled
+        enabled = enabled,
     ) {
         Text(
             text = "Sign Up",

@@ -145,7 +145,11 @@ fun SignInButton(
     enabled: Boolean = true
 ) {
     Button(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .size(
+                height = 48.dp,
+                width = 300.dp
+            ),
         shape = RoundedCornerShape(24.dp),
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(

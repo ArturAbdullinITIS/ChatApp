@@ -41,11 +41,7 @@ fun NavGraph() {
                     }
                 },
                 onNavigateToSignIn = {
-                    navController.navigate(Screen.SignIn.route) {
-                        popUpTo(Screen.SignIn.route) {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStack()
                 }
             )
         }

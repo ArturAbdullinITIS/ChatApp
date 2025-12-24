@@ -6,36 +6,41 @@ import javax.inject.Inject
 
 
 class LoginUseCase @Inject constructor(
-    private val authRepository: AuthRepository,
+private val authRepository: AuthRepository,
 ) {
-
     suspend operator fun invoke(email: String, password: String): SignInValidationResult {
+
         val emailError = when {
             email.isBlank() -> ValidationError.EMAIL_BLANK
             !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> ValidationError.INVALID_EMAIL_FORMAT
             else -> null
         }
+
         val passwordError = when {
             password.isBlank() -> ValidationError.PASSWORD_BLANK
-
             password.length < 6 -> ValidationError.PASSWORD_TOO_SHORT
-
             else -> null
         }
+
         return if (emailError == null && passwordError == null) {
             try {
-                authRepository.login(email, password)
-                SignInValidationResult(
-                    isDataValid = true
-                )
+                val result = authRepository.login(email, password)
+
+                if (result.isSuccess) {
+                    SignInValidationResult(isDataValid = true)
+                } else {
+                    SignInValidationResult(
+                        isDataValid = false,
+                        emailError = ValidationError.FIREBASE_ERROR
+                    )
+                }
             } catch (e: Exception) {
                 SignInValidationResult(
                     isDataValid = false,
                     emailError = ValidationError.FIREBASE_ERROR
                 )
             }
-        }
-        else {
+        } else {
             SignInValidationResult(
                 emailError = emailError,
                 passwordError = passwordError,
