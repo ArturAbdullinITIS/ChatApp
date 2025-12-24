@@ -5,9 +5,9 @@ import androidx.navigation.NavGraph
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.chatapp.presentation.screen.chatlist.ChatListScreen
 import com.example.chatapp.presentation.screen.signin.SignInScreen
 import com.example.chatapp.presentation.screen.signup.SignUpScreen
-import okhttp3.Route
 
 
 @Composable
@@ -18,10 +18,35 @@ fun NavGraph() {
         startDestination = Screen.SignIn.route
     ) {
         composable(Screen.SignIn.route) {
-            SignInScreen()
+            SignInScreen(
+                onNavigateToChatList = {
+                    navController.navigate(Screen.ChatList.route) {
+                        popUpTo(Screen.SignIn.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToSignUp = {
+                    navController.navigate(Screen.SignUp.route)
+                }
+            )
         }
         composable(Screen.SignUp.route) {
-            SignUpScreen()
+            SignUpScreen(
+                onNavigateToChatList = {
+                    navController.navigate(Screen.ChatList.route) {
+                        popUpTo(Screen.SignUp.route) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onNavigateToSignIn = {
+                    navController.popBackStack()
+                }
+            )
+        }
+        composable(Screen.ChatList.route) {
+            ChatListScreen()
         }
     }
 }
@@ -30,4 +55,5 @@ fun NavGraph() {
 sealed class Screen(val route: String) {
     object SignIn: Screen("sign_in")
     object SignUp: Screen("sign_up")
+    object ChatList: Screen("chat_list")
 }

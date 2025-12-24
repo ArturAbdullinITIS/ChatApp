@@ -3,20 +3,19 @@ package com.example.chatapp.presentation.screen.signin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.domain.usecase.LoginUseCase
-import com.example.chatapp.domain.usecase.ValidationError
-import com.example.chatapp.domain.usecase.ValidationResult
+import com.example.chatapp.presentation.util.ErrorParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.math.sign
 
 
 @HiltViewModel
 class SignInViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase,
+    private val errorParser: ErrorParser
 ): ViewModel() {
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
@@ -66,21 +65,10 @@ class SignInViewModel @Inject constructor(
                 state.copy(
                     isLoading = false,
                     isSuccess = result.isDataValid,
-                    emailError = getErrorMessage(result.emailError),
-                    passwordError = getErrorMessage(result.passwordError)
+                    emailError = errorParser.parseErrorMessage(result.emailError),
+                    passwordError = errorParser.parseErrorMessage(result.passwordError)
                 )
             }
-        }
-    }
-
-    private fun getErrorMessage(error: ValidationError?): String {
-        return when(error) {
-            ValidationError.EMAIL_BLANK -> "Email must not be blank!"
-            ValidationError.INVALID_EMAIL_FORMAT -> "Invalid email format!"
-            ValidationError.PASSWORD_BLANK -> "Password must not be blank!"
-            ValidationError.PASSWORD_TOO_SHORT -> "Password must be at least 6 characters!"
-            ValidationError.FIREBASE_ERROR -> "Authentication error occurred!"
-            null -> ""
         }
     }
 }

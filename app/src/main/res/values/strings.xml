@@ -16,4 +16,14 @@
     <string name="email_and_password_must_not_be_blank_exception">Email and password must not be blank</string>
     <string name="hello_welcome_back_sign_in">Hello, Welcome Back!</string>
     <string name="login_to_your_account_sign_in">Login to your account!</string>
+    <string name="email_cannot_be_blank_error">Email cannot be blank!</string>
+    <string name="invalid_email_format_error">Invalid email format!</string>
+    <string name="password_cannot_be_blank_error">Password cannot be blank!</string>
+    <string name="password_must_be_at_least_6_characters_error">Password must be at least 6 characters!</string>
+    <string name="username_cannot_be_blank_error">Username cannot be blank!</string>
+    <string name="username_must_be_at_least_3_characters_error">Username must be at least 3 characters!</string>
+    <string name="username_must_be_at_most_20_characters_error">Username must be at most 20 characters!</string>
+    <string name="authentication_error_occurred_error">Authentication error occurred!</string>
+    <string name="create_your_account">Create Your Account!</string>
+    <string name="or_sign_in_if_you_already_have_an_account">Or sign in if you already have an account!</string>
 </resources>

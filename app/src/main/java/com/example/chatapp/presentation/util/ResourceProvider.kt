@@ -1,4 +1,4 @@
-package com.example.chatapp.presentation.utils
+package com.example.chatapp.presentation.util
 
 import android.content.Context
 
