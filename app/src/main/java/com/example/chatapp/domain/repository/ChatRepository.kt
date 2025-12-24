@@ -1,11 +1,14 @@
 package com.example.chatapp.domain.repository
 
+import com.example.chatapp.domain.model.Chat
 import com.example.chatapp.domain.model.Message
 import kotlinx.coroutines.flow.Flow
 
 interface ChatRepository {
 
-    fun getMessageFlow(): Flow<List<Message>>
+    fun getChats(): Flow<List<Chat>>
 
-    suspend fun sendMessage(chatId: String, text: Message, senderId: String)
+    fun getMessages(receiverId: String): Flow<List<Message>>
+
+    suspend fun sendMessage(receiverId: String, text: String): Result<Unit>
 }
