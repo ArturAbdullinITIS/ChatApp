@@ -7,6 +7,7 @@ import com.example.chatapp.domain.repository.AuthRepository
 import com.example.chatapp.domain.repository.ChatRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -112,5 +113,7 @@ class FirebaseChatRepository @Inject constructor(
             } ?: userId
         }
     }
+
+
 
 }

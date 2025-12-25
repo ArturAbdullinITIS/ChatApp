@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.chatapp.presentation.screen.chat.ChatScreen
 import com.example.chatapp.presentation.screen.chatlist.ChatListScreen
 import com.example.chatapp.presentation.screen.signin.SignInScreen
 import com.example.chatapp.presentation.screen.signup.SignUpScreen
@@ -48,7 +49,11 @@ fun NavGraph() {
             )
         }
         composable(Screen.ChatList.route) {
-            ChatListScreen()
+            ChatListScreen(
+                onChatClick = { chatId ->
+                    navController.navigate(Screen.Chat.createRoute(chatId = chatId))
+                }
+            )
         }
         composable(
             Screen.Chat.route,
@@ -56,7 +61,6 @@ fun NavGraph() {
         ) { backStackEntry ->
             val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
             ChatScreen(chatId = chatId)
-
         }
     }
 }

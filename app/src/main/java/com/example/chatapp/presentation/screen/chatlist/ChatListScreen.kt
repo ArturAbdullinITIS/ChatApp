@@ -1,5 +1,6 @@
 package com.example.chatapp.presentation.screen.chatlist
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,11 +28,16 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapp.ui.theme.LightGrey
+import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
-fun ChatListScreen() {
-    ChatListContent()
+fun ChatListScreen(
+    onChatClick: (String) -> Unit,
+) {
+    ChatListContent(
+        onChatClick = onChatClick
+    )
 }
 
 
@@ -38,10 +45,18 @@ fun ChatListScreen() {
 @Composable
 fun ChatListContent(
     modifier: Modifier = Modifier,
+    onChatClick: (String) -> Unit,
     viewModel: ChatListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val filteredChats by viewModel.filteredChats.collectAsState()
+
+    // test
+    LaunchedEffect(Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        Log.d("UserId", "CURRENT USER ID: $userId")
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -61,7 +76,7 @@ fun ChatListContent(
                         onClick = {
                         },
                         colors = IconButtonDefaults.iconButtonColors(
-                            containerColor = LightGrey
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
                         )
                     ) {
                         Icon(
@@ -77,6 +92,7 @@ fun ChatListContent(
     ) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding)
+                .padding(horizontal = 8.dp)
         ) {
             HorizontalDivider(modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp))
             LazyColumn {
@@ -84,7 +100,10 @@ fun ChatListContent(
                     items = filteredChats,
                     key = { _, chat -> chat.id }
                 ) { _, chat ->
-                    ChatCard(chat = chat)
+                    ChatCard(
+                        onChatClick = onChatClick,
+                        chat = chat
+                    )
                 }
             }
 

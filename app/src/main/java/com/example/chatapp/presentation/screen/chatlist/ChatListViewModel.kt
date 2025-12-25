@@ -6,10 +6,13 @@ import androidx.room.util.query
 import com.example.chatapp.domain.model.Chat
 import com.example.chatapp.domain.usecase.GetChatListUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -39,7 +42,9 @@ class ChatListViewModel @Inject constructor(
             }
         }
     }
+    @OptIn(FlowPreview::class)
     val filteredChats = _state
+        .debounce(300)
         .map { state ->
             state.chats.filter { chat ->
                 val query = state.query.trim()
@@ -50,6 +55,7 @@ class ChatListViewModel @Inject constructor(
                 }
             }
         }
+        .distinctUntilChanged()
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
