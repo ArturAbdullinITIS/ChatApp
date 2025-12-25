@@ -2,6 +2,7 @@ package com.example.chatapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
@@ -222,6 +223,52 @@ val ArrowForward: ImageVector
     }
 
 private var _VscodeCodiconsArrowCircleRight: ImageVector? = null
+
+
+
+
+val CustomSearch: ImageVector
+    get() {
+        if (_FeatherSearch != null) return _FeatherSearch!!
+
+        _FeatherSearch = ImageVector.Builder(
+            name = "search",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Transparent),
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(19f, 11f)
+                arcTo(8f, 8f, 0f, false, true, 11f, 19f)
+                arcTo(8f, 8f, 0f, false, true, 3f, 11f)
+                arcTo(8f, 8f, 0f, false, true, 19f, 11f)
+                close()
+            }
+            path(
+                fill = SolidColor(Color.Transparent),
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(21f, 21f)
+                lineTo(16.65f, 16.65f)
+            }
+        }.build()
+
+        return _FeatherSearch!!
+    }
+
+private var _FeatherSearch: ImageVector? = null
+
+
 
 
 
