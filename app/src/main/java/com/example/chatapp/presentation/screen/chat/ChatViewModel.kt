@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapp.domain.model.Message
+import com.example.chatapp.domain.usecase.GetChatStatusUseCase
 import com.example.chatapp.domain.usecase.GetCurrentUserUseCase
 import com.example.chatapp.domain.usecase.GetMessagesUseCase
 import com.example.chatapp.domain.usecase.SendMessageUseCase
@@ -23,13 +24,14 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val getMessagesUseCase: GetMessagesUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
-    private val getCurrentUserUseCase: GetCurrentUserUseCase
+    private val getCurrentUserUseCase: GetCurrentUserUseCase,
+    private val getChatStatusUseCase: GetChatStatusUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(ChatScreenState())
     val state = _state.asStateFlow()
 
-    private var chatId: String? = null
+    private var receiverId: String? = null
     private var chatName: String? = null
 
     val currentUserId: String?
@@ -37,10 +39,10 @@ class ChatViewModel @Inject constructor(
 
 
     fun init(chatId: String, chatName: String) {
-        if (this.chatId != null && this.chatName != null) return
+        if (this.receiverId != null && this.chatName != null) return
 
 
-        this.chatId = chatId
+        this.receiverId = chatId
         this.chatName = chatName
         viewModelScope.launch {
             getMessagesUseCase(chatId)
@@ -50,6 +52,17 @@ class ChatViewModel @Inject constructor(
         }
         _state.update {
             it.copy(title = chatName)
+        }
+
+        viewModelScope.launch {
+            getChatStatusUseCase(chatId)
+                .collect { status ->
+                    _state.update { state ->
+                        state.copy(
+                            status = status
+                        )
+                    }
+                }
         }
     }
 
@@ -64,8 +77,8 @@ class ChatViewModel @Inject constructor(
             }
 
             ChatCommand.SendMessage -> {
-                val message = _state.value.message
-                val receiverId = chatId
+                val message = _state.value.message.trim()
+                val receiverId = receiverId
                 _state.update { it.copy(message = "") }
                 viewModelScope.launch {
                     if (receiverId != null) {
@@ -94,7 +107,7 @@ data class ChatScreenState(
     val message: String = "",
     val error: String? = null,
     val title: String = "",
-    val status: Boolean = true
+    val status: Boolean = false
 ) {
     val sendButtonEnabled: Boolean
         get() = message.isNotBlank()

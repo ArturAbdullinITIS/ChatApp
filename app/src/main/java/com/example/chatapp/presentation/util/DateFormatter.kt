@@ -11,7 +11,6 @@ import java.util.Date
 import java.util.Locale
 
 
-@Composable
 fun formatDate(timestamp: Long): String {
     val date = Date(timestamp)
     val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())

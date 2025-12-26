@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.chatapp.presentation.util.formatDate
 
 
 @Composable
@@ -58,7 +59,9 @@ fun ChatContent(
     val listState = rememberLazyListState()
 
     LaunchedEffect(state.messages.size) {
-        listState.animateScrollToItem(state.messages.size - 1)
+        if (state.messages.isNotEmpty()) {
+            listState.animateScrollToItem(state.messages.size - 1)
+        }
     }
 
     LaunchedEffect(chatId) {
@@ -94,14 +97,19 @@ fun ChatContent(
         ) {
             Column(
                 modifier = Modifier.weight(1f)
+                    .padding(horizontal = 8.dp)
             ) {
                 if (state.messages.isNotEmpty()) {
-                    LazyColumn {
+                    LazyColumn(
+                        state = listState
+                    ) {
                         items(items = state.messages) { item ->
                             val isSender = item.senderId == viewModel.currentUserId
+                            val timestamp = formatDate(item.timestamp)
                             MessageBox(
                                 message = item.text,
-                                isSender = isSender
+                                isSender = isSender,
+                                timestamp = timestamp
                             )
                         }
                     }

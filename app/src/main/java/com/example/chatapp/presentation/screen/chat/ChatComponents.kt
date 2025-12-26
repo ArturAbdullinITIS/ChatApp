@@ -1,5 +1,7 @@
 package com.example.chatapp.presentation.screen.chat
 
+import android.R.attr.fontFamily
+import android.R.attr.fontWeight
 import android.R.attr.text
 import android.R.attr.textStyle
 import androidx.compose.foundation.BorderStroke
@@ -31,6 +33,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +42,7 @@ import com.example.chatapp.domain.model.Chat
 import com.example.chatapp.ui.theme.ArrowBack
 import com.example.chatapp.ui.theme.PoppinsFontFamily
 import com.example.chatapp.ui.theme.Send
+import com.google.firebase.Timestamp
 
 
 @Composable
@@ -97,7 +101,8 @@ fun CustomTitle(
 @Composable
 fun MessageBox(
     message: String,
-    isSender: Boolean
+    isSender: Boolean,
+    timestamp: String
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -129,25 +134,29 @@ fun MessageBox(
                 containerColor = if(isSender) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
             )
         ) {
-            Text(
-                modifier = Modifier.padding(12.dp),
-                text = message,
-                fontFamily = PoppinsFontFamily,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.sp,
-                color =  if (isSender) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
-            )
+            Column(
+                horizontalAlignment = if(isSender) Alignment.End else Alignment.Start
+            ) {
+                Text(
+                    modifier = Modifier.padding(12.dp),
+                    text = message,
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp,
+                    color =  if (isSender) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    modifier = Modifier.padding(end = 8.dp, bottom = 4.dp, start = 4.dp),
+                    textAlign = TextAlign.End,
+                    text = timestamp,
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 11.sp,
+                    color =  if (isSender) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+                )
+            }
         }
     }
-}
-
-@Composable
-@Preview
-fun PreviewMessageBox() {
-    MessageBox(
-        message = "Hello, how are you?",
-        isSender = true
-    )
 }
 
 
