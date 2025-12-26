@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.util.query
 import com.example.chatapp.domain.model.Chat
 import com.example.chatapp.domain.usecase.GetChatListUseCase
+import com.example.chatapp.domain.usecase.LogOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val getChatListUseCase: GetChatListUseCase
+    private val getChatListUseCase: GetChatListUseCase,
+    private val logOutUseCase: LogOutUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(ChatListState())
@@ -70,6 +72,16 @@ class ChatListViewModel @Inject constructor(
                     )
                 }
             }
+
+            ChatListCommand.Logout -> {
+                viewModelScope.launch {
+                    logOutUseCase()
+                    _state.update {
+                        it.copy(isLoggedIn = false)
+                    }
+                }
+            }
+
         }
     }
 }
@@ -77,10 +89,12 @@ class ChatListViewModel @Inject constructor(
 
 sealed interface ChatListCommand {
     data class SearchQueryChanged(val query: String): ChatListCommand
+    data object Logout: ChatListCommand
 }
 
 data class ChatListState(
     val chats: List<Chat> = emptyList(),
     val isLoading: Boolean = false,
-    val query: String = ""
+    val query: String = "",
+    val isLoggedIn: Boolean = false
 )

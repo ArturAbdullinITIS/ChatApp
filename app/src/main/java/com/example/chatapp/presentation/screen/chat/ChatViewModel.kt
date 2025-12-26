@@ -1,20 +1,15 @@
 package com.example.chatapp.presentation.screen.chat
 
-import android.R.id.message
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapp.domain.model.Message
-import com.example.chatapp.domain.usecase.GetChatStatusUseCase
 import com.example.chatapp.domain.usecase.GetCurrentUserUseCase
 import com.example.chatapp.domain.usecase.GetMessagesUseCase
+import com.example.chatapp.domain.usecase.ObserveUserStatusUseCase
 import com.example.chatapp.domain.usecase.SendMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,8 +20,8 @@ class ChatViewModel @Inject constructor(
     private val getMessagesUseCase: GetMessagesUseCase,
     private val sendMessageUseCase: SendMessageUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val getChatStatusUseCase: GetChatStatusUseCase
-): ViewModel() {
+    private val observeUserStatusUseCase: ObserveUserStatusUseCase
+) : ViewModel() {
 
     private val _state = MutableStateFlow(ChatScreenState())
     val state = _state.asStateFlow()
@@ -38,14 +33,14 @@ class ChatViewModel @Inject constructor(
         get() = getCurrentUserUseCase()
 
 
-    fun init(chatId: String, chatName: String) {
+    fun init(receiverId: String, chatName: String) {
         if (this.receiverId != null && this.chatName != null) return
 
 
-        this.receiverId = chatId
+        this.receiverId = receiverId
         this.chatName = chatName
         viewModelScope.launch {
-            getMessagesUseCase(chatId)
+            getMessagesUseCase(receiverId)
                 .collect { messages ->
                     _state.update { it.copy(messages = messages, isLoading = false) }
                 }
@@ -55,14 +50,16 @@ class ChatViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            getChatStatusUseCase(chatId)
-                .collect { status ->
-                    _state.update { state ->
-                        state.copy(
-                            status = status
-                        )
+            viewModelScope.launch {
+                observeUserStatusUseCase(receiverId)
+                    .collect { status ->
+                        _state.update { state ->
+                            state.copy(
+                                status = status
+                            )
+                        }
                     }
-                }
+            }
         }
     }
 
@@ -82,8 +79,9 @@ class ChatViewModel @Inject constructor(
                 _state.update { it.copy(message = "") }
                 viewModelScope.launch {
                     if (receiverId != null) {
-                        val result = sendMessageUseCase(receiverId = receiverId, messageText = message)
-                        if(!result.isSuccess) {
+                        val result =
+                            sendMessageUseCase(receiverId = receiverId, messageText = message)
+                        if (!result.isSuccess) {
                             _state.update { state ->
                                 state.copy(
                                     error = "Failed to send message"
@@ -96,6 +94,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 }
+
 sealed interface ChatCommand {
     data class InputMessage(val message: String) : ChatCommand
     data object SendMessage : ChatCommand

@@ -2,6 +2,7 @@ package com.example.chatapp.presentation.screen.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.chatapp.domain.usecase.SetOnlineUseCase
 import com.example.chatapp.domain.usecase.SignUpUseCase
 import com.example.chatapp.presentation.util.ErrorParser
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase,
-    private val errorParser: ErrorParser
+    private val errorParser: ErrorParser,
+    private val setOnlineUseCase: SetOnlineUseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(SignUpState())
     val state = _state.asStateFlow()
@@ -68,6 +70,10 @@ class SignUpViewModel @Inject constructor(
             val currentUsername = _state.value.username
 
             val result = signUpUseCase(currentEmail, currentPassword, currentUsername)
+            if (result.isDataValid && result.emailError == null &&
+                result.passwordError == null && result.usernameError == null) {
+                setOnlineUseCase()
+            }
             _state.update { state ->
                 state.copy(
                     isLoading = false,

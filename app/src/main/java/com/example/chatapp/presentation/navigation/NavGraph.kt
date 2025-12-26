@@ -15,12 +15,14 @@ import com.example.chatapp.presentation.screen.signup.SignUpScreen
 
 
 @Composable
-fun NavGraph() {
+fun NavGraph(
+    isUserLoggedIn: Boolean
+) {
     val navController = rememberNavController()
-    val skipAuth = true
+    val startDestination = if(isUserLoggedIn) Screen.ChatList.route else Screen.SignIn.route
     NavHost(
         navController = navController,
-        startDestination = if(!skipAuth) Screen.SignIn.route else Screen.ChatList.route
+        startDestination = startDestination
     ) {
         composable(Screen.SignIn.route) {
             SignInScreen(
@@ -54,6 +56,13 @@ fun NavGraph() {
             ChatListScreen(
                 onChatClick = { chat ->
                     navController.navigate(Screen.Chat.createRoute(chat))
+                },
+                onNavigateToSignIn = {
+                    navController.navigate(Screen.SignIn.route) {
+                        popUpTo(Screen.ChatList.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
