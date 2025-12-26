@@ -26,4 +26,6 @@
     <string name="authentication_error_occurred_error">Authentication error occurred!</string>
     <string name="create_your_account">Create Your Account!</string>
     <string name="or_sign_in_if_you_already_have_an_account">Or sign in if you already have an account!</string>
+    <string name="back_to_chat_list_button">Back to chat list button</string>
+    <string name="user_icon_chat">User icon</string>
 </resources>

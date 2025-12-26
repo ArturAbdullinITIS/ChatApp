@@ -27,13 +27,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chatapp.domain.model.Chat
 import com.example.chatapp.ui.theme.LightGrey
 import com.google.firebase.auth.FirebaseAuth
 
 
 @Composable
 fun ChatListScreen(
-    onChatClick: (String) -> Unit,
+    onChatClick: (Chat) -> Unit,
 ) {
     ChatListContent(
         onChatClick = onChatClick
@@ -45,7 +46,7 @@ fun ChatListScreen(
 @Composable
 fun ChatListContent(
     modifier: Modifier = Modifier,
-    onChatClick: (String) -> Unit,
+    onChatClick: (Chat) -> Unit,
     viewModel: ChatListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()

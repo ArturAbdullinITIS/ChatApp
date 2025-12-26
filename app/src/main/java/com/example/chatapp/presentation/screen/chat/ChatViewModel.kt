@@ -1,9 +1,11 @@
 package com.example.chatapp.presentation.screen.chat
 
+import android.R.id.message
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatapp.domain.model.Message
+import com.example.chatapp.domain.usecase.GetCurrentUserUseCase
 import com.example.chatapp.domain.usecase.GetMessagesUseCase
 import com.example.chatapp.domain.usecase.SendMessageUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,23 +22,34 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val getMessagesUseCase: GetMessagesUseCase,
-    private val sendMessageUseCase: SendMessageUseCase
+    private val sendMessageUseCase: SendMessageUseCase,
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(ChatScreenState())
     val state = _state.asStateFlow()
 
     private var chatId: String? = null
+    private var chatName: String? = null
 
-    fun init(chatId: String) {
-        if (this.chatId != null) return
+    val currentUserId: String?
+        get() = getCurrentUserUseCase()
+
+
+    fun init(chatId: String, chatName: String) {
+        if (this.chatId != null && this.chatName != null) return
+
 
         this.chatId = chatId
+        this.chatName = chatName
         viewModelScope.launch {
             getMessagesUseCase(chatId)
                 .collect { messages ->
                     _state.update { it.copy(messages = messages, isLoading = false) }
                 }
+        }
+        _state.update {
+            it.copy(title = chatName)
         }
     }
 
@@ -51,18 +64,13 @@ class ChatViewModel @Inject constructor(
             }
 
             ChatCommand.SendMessage -> {
+                val message = _state.value.message
+                val receiverId = chatId
+                _state.update { it.copy(message = "") }
                 viewModelScope.launch {
-                    val message = _state.value.message
-                    val receiverId = chatId
                     if (receiverId != null) {
                         val result = sendMessageUseCase(receiverId = receiverId, messageText = message)
-                        if(result.isSuccess) {
-                            _state.update { state ->
-                                state.copy(
-                                    message = ""
-                                )
-                            }
-                        } else {
+                        if(!result.isSuccess) {
                             _state.update { state ->
                                 state.copy(
                                     error = "Failed to send message"
@@ -84,8 +92,11 @@ data class ChatScreenState(
     val messages: List<Message> = emptyList(),
     val isLoading: Boolean = true,
     val message: String = "",
-    val error: String? = null
+    val error: String? = null,
+    val title: String = "",
+    val status: Boolean = true
 ) {
     val sendButtonEnabled: Boolean
         get() = message.isNotBlank()
+
 }

@@ -1,5 +1,6 @@
 package com.example.chatapp.presentation.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraph
 import androidx.navigation.NavType
@@ -16,9 +17,10 @@ import com.example.chatapp.presentation.screen.signup.SignUpScreen
 @Composable
 fun NavGraph() {
     val navController = rememberNavController()
+    val skipAuth = true
     NavHost(
         navController = navController,
-        startDestination = Screen.SignIn.route
+        startDestination = if(!skipAuth) Screen.SignIn.route else Screen.ChatList.route
     ) {
         composable(Screen.SignIn.route) {
             SignInScreen(
@@ -50,17 +52,27 @@ fun NavGraph() {
         }
         composable(Screen.ChatList.route) {
             ChatListScreen(
-                onChatClick = { chatId ->
-                    navController.navigate(Screen.Chat.createRoute(chatId = chatId))
+                onChatClick = { chat ->
+                    navController.navigate(Screen.Chat.createRoute(chat))
                 }
             )
         }
         composable(
             Screen.Chat.route,
-            arguments = listOf(navArgument("chatId") { type = NavType.StringType})
+            arguments = listOf(
+                navArgument("chatId") { type = NavType.StringType},
+                navArgument("chatName") { type = NavType.StringType}
+            )
         ) { backStackEntry ->
             val chatId = backStackEntry.arguments?.getString("chatId") ?: ""
-            ChatScreen(chatId = chatId)
+            val chatName = backStackEntry.arguments?.getString("chatName") ?: ""
+            ChatScreen(
+                chatId = chatId,
+                chatName = chatName,
+                onNavigateBack = {
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
@@ -71,7 +83,8 @@ sealed class Screen(val route: String) {
     object SignUp: Screen("sign_up")
     object ChatList: Screen("chat_list")
 
-    object Chat: Screen("chat/{chatId}") {
-        fun createRoute(chatId: String) = "chat/$chatId"
+    object Chat: Screen("chat/{chatId}/{chatName}") {
+        fun createRoute(chat: com.example.chatapp.domain.model.Chat) = "chat/${chat.id}/${Uri.encode(chat.name)}"
+
     }
 }

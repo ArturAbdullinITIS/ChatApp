@@ -58,7 +58,7 @@ import com.example.chatapp.ui.theme.PoppinsFontFamily
 
 @Composable
 fun ChatCard(
-    onChatClick: (String) -> Unit,
+    onChatClick: (Chat) -> Unit,
     chat: Chat
 ) {
     Card(
@@ -66,7 +66,7 @@ fun ChatCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable {
-                onChatClick(chat.id)
+                onChatClick(chat)
             },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,

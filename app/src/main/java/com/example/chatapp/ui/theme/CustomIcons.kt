@@ -269,6 +269,49 @@ val CustomSearch: ImageVector
 private var _FeatherSearch: ImageVector? = null
 
 
+val Send: ImageVector
+    get() {
+        if (_TablerSend != null) return _TablerSend!!
+
+        _TablerSend = ImageVector.Builder(
+            name = "send",
+            defaultWidth = 24.dp,
+            defaultHeight = 24.dp,
+            viewportWidth = 24f,
+            viewportHeight = 24f
+        ).apply {
+            path(
+                fill = SolidColor(Color.Transparent),
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(10f, 14f)
+                lineToRelative(11f, -11f)
+            }
+            path(
+                fill = SolidColor(Color.Transparent),
+                stroke = SolidColor(Color.Black),
+                strokeLineWidth = 2f,
+                strokeLineCap = StrokeCap.Round,
+                strokeLineJoin = StrokeJoin.Round
+            ) {
+                moveTo(21f, 3f)
+                lineToRelative(-6.5f, 18f)
+                arcToRelative(0.55f, 0.55f, 0f, false, true, -1f, 0f)
+                lineToRelative(-3.5f, -7f)
+                lineToRelative(-7f, -3.5f)
+                arcToRelative(0.55f, 0.55f, 0f, false, true, 0f, -1f)
+                lineToRelative(18f, -6.5f)
+            }
+        }.build()
+
+        return _TablerSend!!
+    }
+
+private var _TablerSend: ImageVector? = null
+
 
 
 
