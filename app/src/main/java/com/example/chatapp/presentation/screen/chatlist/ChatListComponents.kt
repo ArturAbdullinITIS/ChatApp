@@ -6,6 +6,7 @@ import android.widget.Space
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,6 +44,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,27 +55,19 @@ import com.example.chatapp.ui.theme.LightGrey
 import com.example.chatapp.ui.theme.PoppinsFontFamily
 
 
-@Preview
-@Composable
-fun ChatCardPreview() {
-    val chat = Chat(
-        id = "1",
-        name = "John Doe",
-        lastMessage = "Hello, how are you?",
-        timestamp = System.currentTimeMillis()
-    )
-    ChatCard(chat = chat)
-}
-
 
 @Composable
 fun ChatCard(
+    onChatClick: (Chat) -> Unit,
     chat: Chat
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable {
+                onChatClick(chat)
+            },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
         ),
@@ -82,7 +76,7 @@ fun ChatCard(
             color = MaterialTheme.colorScheme.primary,
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
+            defaultElevation = 4.dp
         ),
         shape = RoundedCornerShape(24.dp)
 
@@ -111,7 +105,9 @@ fun ChatCard(
                         fontFamily = PoppinsFontFamily
                     )
                     Text(
-                        text = formatDate(chat.timestamp)
+                        text = formatDate(chat.timestamp),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontFamily = PoppinsFontFamily,
                     )
                 }
 
@@ -120,7 +116,9 @@ fun ChatCard(
                     text = chat.lastMessage,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontFamily = PoppinsFontFamily
+                    fontFamily = PoppinsFontFamily,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
@@ -150,7 +148,7 @@ fun SearchChatBar(
                     Color.Transparent,
                 shape = RoundedCornerShape(16.dp)
             )
-            .background(LightGrey)
+            .background(MaterialTheme.colorScheme.surfaceContainer)
             .padding(horizontal = 12.dp)
             .onFocusChanged { state ->
                 isFocused = state.isFocused
@@ -185,7 +183,7 @@ fun SearchChatBar(
                         fontSize = 16.sp,
                         fontFamily = PoppinsFontFamily,
                         fontWeight = FontWeight.Normal,
-                        color = Color.Black.copy(alpha = 0.4f)
+                        color = Color.Black
                     )
                 }
                 innerTextField()

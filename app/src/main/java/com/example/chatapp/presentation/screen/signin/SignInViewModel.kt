@@ -3,6 +3,7 @@ package com.example.chatapp.presentation.screen.signin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.chatapp.domain.usecase.LoginUseCase
+import com.example.chatapp.domain.usecase.SetOnlineUseCase
 import com.example.chatapp.presentation.util.ErrorParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SignInViewModel @Inject constructor(
     private val loginUseCase: LoginUseCase,
-    private val errorParser: ErrorParser
+    private val errorParser: ErrorParser,
+    private val setOnlineUseCase: SetOnlineUseCase
 ): ViewModel() {
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
@@ -60,7 +62,9 @@ class SignInViewModel @Inject constructor(
             val email = _state.value.email
             val password = _state.value.password
             val result = loginUseCase(email, password)
-
+            if (result.isDataValid && result.emailError == null && result.passwordError == null) {
+                setOnlineUseCase()
+            }
             _state.update { state ->
                 state.copy(
                     isLoading = false,

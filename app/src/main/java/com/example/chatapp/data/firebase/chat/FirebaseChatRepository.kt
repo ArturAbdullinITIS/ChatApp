@@ -1,10 +1,10 @@
 package com.example.chatapp.data.firebase.chat
 
-import androidx.compose.ui.graphics.RectangleShape
 import com.example.chatapp.domain.model.Chat
 import com.example.chatapp.domain.model.Message
 import com.example.chatapp.domain.repository.AuthRepository
 import com.example.chatapp.domain.repository.ChatRepository
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.channels.awaitClose
@@ -19,7 +19,7 @@ import javax.inject.Singleton
 class FirebaseChatRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val authRepository: AuthRepository
-): ChatRepository {
+) : ChatRepository {
     override fun getChats(): Flow<List<Chat>> = callbackFlow {
         val userId = authRepository.getCurrentUserId()!!
 
@@ -40,6 +40,7 @@ class FirebaseChatRepository @Inject constructor(
             }
         awaitClose()
     }
+
     override fun getMessages(receiverId: String): Flow<List<Message>> = callbackFlow {
         val userId = authRepository.getCurrentUserId() ?: return@callbackFlow
 
@@ -56,7 +57,7 @@ class FirebaseChatRepository @Inject constructor(
                 }
                 val messages = snapshot?.documents?.mapNotNull { doc ->
                     doc.toObject(Message::class.java)?.copy(id = doc.id)
-                }?:emptyList()
+                } ?: emptyList()
                 trySend(messages)
             }
         awaitClose()
@@ -66,7 +67,8 @@ class FirebaseChatRepository @Inject constructor(
         receiverId: String,
         text: String
     ): Result<Unit> {
-        val senderId = authRepository.getCurrentUserId()?: return Result.failure(Exception("No user"))
+        val senderId =
+            authRepository.getCurrentUserId() ?: return Result.failure(Exception("No user"))
 
         val chatUpdate = hashMapOf(
             "name" to getUserDisplayName(userId = receiverId),
@@ -106,11 +108,29 @@ class FirebaseChatRepository @Inject constructor(
                 .get()
                 .await()
                 .getString("displayName") ?: userId
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             authRepository.getCurrentUserId()?.let { currentUserId ->
-                if(userId == currentUserId) "Me" else userId
+                if (userId == currentUserId) "Me" else userId
             } ?: userId
         }
+    }
+
+
+    override fun getPresence(receiverId: String): Flow<Boolean> = callbackFlow {
+        val userId = authRepository.getCurrentUserId() ?: return@callbackFlow
+        val listener = firestore.collection("chats")
+            .document(userId)
+            .collection("chats")
+            .document(receiverId)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+                snapshot?.getBoolean("presence")?.let { trySend(it) }
+            }
+
+        awaitClose { listener.remove() }
     }
 
 }
