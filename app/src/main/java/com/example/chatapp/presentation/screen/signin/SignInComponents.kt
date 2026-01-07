@@ -4,15 +4,18 @@ import android.R.attr.contentDescription
 import android.R.attr.onClick
 import android.R.attr.text
 import android.widget.Button
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.RemoveRedEye
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -69,6 +73,42 @@ fun SignInEmailTextField(
     )
 }
 
+
+@Composable
+fun SignInPhoneTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String?
+) {
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = value,
+        singleLine = true,
+        onValueChange = onValueChange,
+        label = {
+            Text(stringResource(R.string.phone_number_signin))
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Phone,
+                contentDescription = stringResource(R.string.phone_icon_signin)
+            )
+        },
+        isError = errorMessage?.isNotEmpty() ?: false,
+        supportingText = {
+            if (errorMessage?.isNotEmpty() ?: false) {
+                Text(errorMessage)
+            }
+        },
+        shape = RoundedCornerShape(24.dp),
+        placeholder = {
+            Text(text = stringResource(R.string.enter_your_phone_number_signin))
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Phone
+        )
+    )
+}
 
 
 
@@ -142,7 +182,7 @@ fun SignInPasswordVisibilityIcon(
 @Composable
 fun SignInButton(
     onClick: () -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
 ) {
     Button(
         modifier = Modifier
@@ -160,6 +200,58 @@ fun SignInButton(
         Text(
             text = "Sign In",
             fontSize = 20.sp
+        )
+    }
+}
+
+@Composable
+fun EmailAuthButton(
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier
+) {
+    Button(
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+            contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+        ),
+        border = BorderStroke(
+            width = if (isSelected) 0.dp else 1.dp,
+            color = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Text(
+            text = "Email",
+            fontSize = 16.sp
+        )
+    }
+}
+
+@Composable
+fun PhoneAuthButton(
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier
+) {
+    Button(
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
+            contentColor = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+        ),
+        border = BorderStroke(
+            width = if (isSelected) 0.dp else 1.dp,
+            color = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Text(
+            text = "Phone",
+            fontSize = 16.sp
         )
     }
 }

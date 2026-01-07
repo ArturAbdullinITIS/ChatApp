@@ -69,7 +69,6 @@ fun ChatContent(
     }
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets(0),
         topBar = {
             Surface(
                 shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
@@ -93,7 +92,8 @@ fun ChatContent(
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
+            modifier = Modifier.padding(innerPadding)
+                .imePadding()
         ) {
             Column(
                 modifier = Modifier.weight(1f)
@@ -129,7 +129,7 @@ fun ChatContent(
             }
 
             Surface(
-                color = MaterialTheme.colorScheme.surfaceContainer,
+                color = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .imePadding(),

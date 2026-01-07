@@ -43,6 +43,11 @@ class ChatListViewModel @Inject constructor(
                 }
             }
         }
+        _state.update { state ->
+            state.copy(
+                isLoggedIn = true
+            )
+        }
     }
     @OptIn(FlowPreview::class)
     val filteredChats = _state
@@ -75,13 +80,12 @@ class ChatListViewModel @Inject constructor(
 
             ChatListCommand.Logout -> {
                 viewModelScope.launch {
-                    logOutUseCase()
                     _state.update {
                         it.copy(isLoggedIn = false)
                     }
+                    logOutUseCase()
                 }
             }
-
         }
     }
 }
@@ -96,5 +100,5 @@ data class ChatListState(
     val chats: List<Chat> = emptyList(),
     val isLoading: Boolean = false,
     val query: String = "",
-    val isLoggedIn: Boolean = false
+    val isLoggedIn: Boolean = true
 )
