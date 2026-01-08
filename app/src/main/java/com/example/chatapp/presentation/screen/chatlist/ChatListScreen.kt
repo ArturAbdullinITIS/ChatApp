@@ -65,7 +65,7 @@ fun ChatListContent(
     }
     LaunchedEffect(state.isLoggedIn) {
         if(!state.isLoggedIn) {
-            onNavigateToSignIn
+            onNavigateToSignIn()
         }
     }
 
@@ -119,16 +119,6 @@ fun ChatListContent(
                         chat = chat
                     )
                 }
-            }
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    viewModel.processCommand(ChatListCommand.Logout)
-                }
-            ) {
-                Text(
-                    "Log Out"
-                )
             }
 
         }

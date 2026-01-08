@@ -26,7 +26,6 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
     private val getChatListUseCase: GetChatListUseCase,
-    private val logOutUseCase: LogOutUseCase
 ): ViewModel() {
 
     private val _state = MutableStateFlow(ChatListState())
@@ -78,14 +77,6 @@ class ChatListViewModel @Inject constructor(
                 }
             }
 
-            ChatListCommand.Logout -> {
-                viewModelScope.launch {
-                    _state.update {
-                        it.copy(isLoggedIn = false)
-                    }
-                    logOutUseCase()
-                }
-            }
         }
     }
 }
@@ -93,7 +84,6 @@ class ChatListViewModel @Inject constructor(
 
 sealed interface ChatListCommand {
     data class SearchQueryChanged(val query: String): ChatListCommand
-    data object Logout: ChatListCommand
 }
 
 data class ChatListState(

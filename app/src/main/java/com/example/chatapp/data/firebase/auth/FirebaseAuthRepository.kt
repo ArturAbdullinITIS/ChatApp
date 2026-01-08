@@ -15,7 +15,7 @@ import javax.inject.Singleton
 class FirebaseAuthRepository @Inject constructor(
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore
-): AuthRepository {
+) : AuthRepository {
 
     override suspend fun login(email: String, password: String): Result<Unit> =
         try {
@@ -98,5 +98,11 @@ class FirebaseAuthRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override suspend fun getCurrentUserDisplayName(): String {
+        val user = auth.currentUser ?: throw Exception("No user")
+        val displayName = user.displayName ?: throw Exception("No display name")
+        return displayName
     }
 }
