@@ -28,4 +28,7 @@
     <string name="or_sign_in_if_you_already_have_an_account">Or sign in if you already have an account!</string>
     <string name="back_to_chat_list_button">Back to chat list button</string>
     <string name="user_icon_chat">User icon</string>
+    <string name="phone_number_signin">Phone number</string>
+    <string name="phone_icon_signin">Phone icon</string>
+    <string name="enter_your_phone_number_signin">Enter your phone number</string>
 </resources>

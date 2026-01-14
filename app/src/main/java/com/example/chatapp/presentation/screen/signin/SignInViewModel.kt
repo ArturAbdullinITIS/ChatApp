@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.chatapp.domain.usecase.LoginUseCase
 import com.example.chatapp.domain.usecase.SetOnlineUseCase
 import com.example.chatapp.presentation.util.ErrorParser
+import com.google.rpc.context.AttributeContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,6 +53,23 @@ class SignInViewModel @Inject constructor(
             SignInCommand.Login -> {
                 signIn()
             }
+
+            is SignInCommand.ChangeAuthType -> {
+                _state.update { state ->
+                    state.copy(
+                        authType = command.authType
+                    )
+                }
+            }
+
+            is SignInCommand.InputPhone -> {
+                _state.update { state ->
+                    state.copy(
+                        phone = command.phone,
+                        phoneError = ""
+                    )
+                }
+            }
         }
     }
 
@@ -85,6 +103,8 @@ sealed interface SignInCommand {
     data class InputPassword(val password: String): SignInCommand
     data object ChangePasswordVisibility: SignInCommand
     data object Login: SignInCommand
+    data class ChangeAuthType(val authType: AuthType): SignInCommand
+    data class InputPhone(val phone: String): SignInCommand
 }
 
 data class SignInState(
@@ -94,5 +114,14 @@ data class SignInState(
     val passwordError: String? = "",
     val isPasswordVisible: Boolean = false,
     val isSuccess: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val authType: AuthType = AuthType.EMAIL,
+    val phone: String = "",
+    val phoneError: String? = ""
 )
+
+
+enum class AuthType {
+    EMAIL,
+    PHONE
+}

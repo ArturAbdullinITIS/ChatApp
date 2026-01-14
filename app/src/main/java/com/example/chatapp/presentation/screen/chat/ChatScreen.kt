@@ -7,15 +7,21 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.waterfall
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -69,7 +75,6 @@ fun ChatContent(
     }
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        contentWindowInsets = WindowInsets(0),
         topBar = {
             Surface(
                 shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp),
@@ -90,10 +95,10 @@ fun ChatContent(
                     },
                 )
             }
-        }
+        },
     ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
+            modifier = Modifier.padding(innerPadding)
         ) {
             Column(
                 modifier = Modifier.weight(1f)
@@ -128,17 +133,22 @@ fun ChatContent(
                 }
             }
 
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceContainer,
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
                 modifier = Modifier
+                    .imePadding()
                     .fillMaxWidth()
-                    .imePadding(),
-                shadowElevation = 16.dp,
-                tonalElevation = 16.dp,
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                ,
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 4.dp
+                )
             ) {
                 Column(
-                    modifier.padding(top = 8.dp)
+                    modifier
+                        .padding(8.dp)
                 ) {
                     SendMessageBox(
                         value = state.message,
@@ -146,7 +156,6 @@ fun ChatContent(
                         onClick = { viewModel.processCommand(ChatCommand.SendMessage) },
                         isSendEnabled = state.sendButtonEnabled
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }

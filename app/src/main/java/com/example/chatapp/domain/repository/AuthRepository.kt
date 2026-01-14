@@ -8,4 +8,5 @@ interface AuthRepository {
 
     fun getCurrentUserId(): String?
     suspend fun logOut(): Result<Unit>
+    suspend fun getCurrentUserDisplayName(): String
 }
