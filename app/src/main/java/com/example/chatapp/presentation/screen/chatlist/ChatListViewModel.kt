@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.room.util.query
 import com.example.chatapp.domain.model.Chat
+import com.example.chatapp.domain.usecase.AddNewChatUseCase
 import com.example.chatapp.domain.usecase.GetChatListUseCase
 import com.example.chatapp.domain.usecase.LogOutUseCase
+import com.example.chatapp.presentation.util.ErrorParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,11 +23,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.io.path.Path
 
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
     private val getChatListUseCase: GetChatListUseCase,
+    private val addNewChatUseCase: AddNewChatUseCase,
+    private val errorParser: ErrorParser
 ): ViewModel() {
 
     private val _state = MutableStateFlow(ChatListState())
@@ -77,18 +82,74 @@ class ChatListViewModel @Inject constructor(
                 }
             }
 
+            is ChatListCommand.InputNewChatEmail -> {
+                _state.update { state ->
+                    state.copy(
+                        newChatEmail = command.email,
+                        emailError = ""
+                    )
+                }
+            }
+
+            ChatListCommand.AddNewChat -> {
+                viewModelScope.launch {
+                    val email = _state.value.newChatEmail.trim()
+
+                    val result = addNewChatUseCase(email)
+                    if(result.isDataValid) {
+                        _state.update { state ->
+                            state.copy(
+                                newChatEmail = "",
+                                showDialog = false
+                            )
+                        }
+                    } else {
+                        _state.update { state ->
+                            state.copy(
+                                emailError = errorParser.parseErrorMessage(result.emailError)
+                            )
+                        }
+                    }
+                }
+            }
+
+            ChatListCommand.HideDialog -> {
+                _state.update { state ->
+                    state.copy(
+                        showDialog = false,
+                        newChatEmail = "",
+                        emailError = ""
+                    )
+                }
+            }
+
+            ChatListCommand.ShowDialog -> {
+                _state.update { state ->
+                    state.copy(
+                        showDialog = true
+                    )
+                }
+            }
         }
     }
 }
 
 
 sealed interface ChatListCommand {
+    data class InputNewChatEmail(val email: String): ChatListCommand
     data class SearchQueryChanged(val query: String): ChatListCommand
+    data object AddNewChat: ChatListCommand
+    data object HideDialog: ChatListCommand
+
+    data object ShowDialog: ChatListCommand
 }
 
 data class ChatListState(
+    val showDialog: Boolean = false,
+    val newChatEmail: String = "",
+    val emailError: String = "",
     val chats: List<Chat> = emptyList(),
     val isLoading: Boolean = false,
     val query: String = "",
-    val isLoggedIn: Boolean = true
+    val isLoggedIn: Boolean = true,
 )
