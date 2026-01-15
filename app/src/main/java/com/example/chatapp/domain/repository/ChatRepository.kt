@@ -13,4 +13,7 @@ interface ChatRepository {
     suspend fun sendMessage(receiverId: String, text: String): Result<Unit>
 
     fun getPresence(receiverId: String): Flow<Boolean>
+
+    suspend fun createChat(receiverId: String): Result<Unit>
+
 }

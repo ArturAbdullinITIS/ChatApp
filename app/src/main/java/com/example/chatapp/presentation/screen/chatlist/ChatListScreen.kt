@@ -25,6 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -58,11 +61,24 @@ fun ChatListContent(
     val state by viewModel.state.collectAsState()
     val filteredChats by viewModel.filteredChats.collectAsState()
 
-    // test
-    LaunchedEffect(Unit) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        Log.d("UserId", "CURRENT USER ID: $userId")
+
+
+    if(state.showDialog) {
+        AddChatDialog(
+            onDismissRequest = {
+                viewModel.processCommand(ChatListCommand.HideDialog)
+            },
+            value = state.newChatEmail,
+            onValueChange = {
+                viewModel.processCommand(ChatListCommand.InputNewChatEmail(it))
+            },
+            errorMessage = state.emailError,
+            onClick = {
+                viewModel.processCommand(ChatListCommand.AddNewChat)
+            }
+        )
     }
+
     LaunchedEffect(state.isLoggedIn) {
         if(!state.isLoggedIn) {
             onNavigateToSignIn()
@@ -86,6 +102,7 @@ fun ChatListContent(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         shape = RoundedCornerShape(16.dp),
                         onClick = {
+                            viewModel.processCommand(ChatListCommand.ShowDialog)
                         },
                         colors = IconButtonDefaults.iconButtonColors(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
@@ -103,7 +120,8 @@ fun ChatListContent(
         modifier = modifier.fillMaxSize()
     ) { innerPadding ->
         Column(
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
                 .padding(horizontal = 4.dp)
         ) {
             HorizontalDivider(modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp))

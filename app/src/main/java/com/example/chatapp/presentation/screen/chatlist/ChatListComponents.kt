@@ -1,5 +1,6 @@
 package com.example.chatapp.presentation.screen.chatlist
 
+import android.R.attr.enabled
 import android.R.attr.fontFamily
 import android.R.attr.fontWeight
 import android.widget.Space
@@ -22,7 +23,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -31,6 +35,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,11 +48,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.example.chatapp.R
 import com.example.chatapp.domain.model.Chat
 import com.example.chatapp.presentation.util.formatDate
 import com.example.chatapp.ui.theme.CustomSearch
@@ -192,3 +202,111 @@ fun SearchChatBar(
     }
 }
 
+
+@Composable
+fun AddChatDialog(
+    onDismissRequest: () -> Unit,
+    value: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String?,
+    onClick: () -> Unit,
+    ) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = DialogProperties(usePlatformDefaultWidth = true)
+    ) {
+        Card(
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 4.dp
+            ),
+            shape = RoundedCornerShape(24.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Add New Chat",
+                    fontSize = 20.sp,
+                    fontFamily = PoppinsFontFamily,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                NewChatEmailTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    errorMessage = errorMessage
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                AddNewChatButton(
+                    onClick = onClick,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+            }
+
+        }
+    }
+}
+
+
+@Composable
+fun NewChatEmailTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String?
+) {
+    OutlinedTextField(
+        modifier = Modifier.fillMaxWidth(),
+        value = value,
+        singleLine = true,
+        onValueChange = onValueChange,
+        label = {
+            Text(stringResource(R.string.email_sign_in))
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Email,
+                contentDescription = stringResource(R.string.email_icon_sign_in)
+            )
+        },
+        isError = errorMessage?.isNotEmpty() ?: false,
+        supportingText = {
+            if (errorMessage?.isNotEmpty() ?: false) {
+                Text(errorMessage)
+            }
+        },
+        shape = RoundedCornerShape(24.dp),
+        placeholder = {
+            Text(stringResource(R.string.enter_user_s_email))
+        }
+    )
+}
+
+
+@Composable
+fun AddNewChatButton(
+    onClick: () -> Unit,
+) {
+    Button(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        ),
+    ) {
+        Text(
+            text = "Add New Chat",
+            fontSize = 20.sp
+        )
+    }
+}

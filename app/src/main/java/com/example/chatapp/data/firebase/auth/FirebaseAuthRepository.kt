@@ -76,8 +76,8 @@ class FirebaseAuthRepository @Inject constructor(
         }
     }
 
-    override fun getCurrentUserId(): String? {
-        return auth.currentUser?.uid
+    override fun getCurrentUserId(): String {
+        return auth.currentUser?.uid ?: ""
     }
 
     override suspend fun logOut(): Result<Unit> {
@@ -104,5 +104,15 @@ class FirebaseAuthRepository @Inject constructor(
         val user = auth.currentUser ?: throw Exception("No user")
         val displayName = user.displayName ?: throw Exception("No display name")
         return displayName
+    }
+
+    override suspend fun getUserIdByEmail(email: String): String {
+        val normalizedEmail = email.trim().lowercase()
+        val snapshot = firestore.collection("users")
+            .whereEqualTo("email", normalizedEmail)
+            .limit(1)
+            .get()
+            .await()
+        return snapshot.documents.firstOrNull()?.id ?: ""
     }
 }

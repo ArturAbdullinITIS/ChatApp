@@ -1,9 +1,13 @@
 package com.example.chatapp.data.firebase.chat
 
+import androidx.compose.animation.core.snap
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.RectangleShape
 import com.example.chatapp.domain.model.Chat
 import com.example.chatapp.domain.model.Message
 import com.example.chatapp.domain.repository.AuthRepository
 import com.example.chatapp.domain.repository.ChatRepository
+import com.google.android.play.integrity.internal.f
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -70,24 +74,35 @@ class FirebaseChatRepository @Inject constructor(
         val senderId =
             authRepository.getCurrentUserId() ?: return Result.failure(Exception("No user"))
 
-        val chatUpdate = hashMapOf(
-            "name" to getUserDisplayName(userId = receiverId),
+        val now = System.currentTimeMillis()
+        val senderName = getUserDisplayName(senderId)
+        val receiverName = getUserDisplayName(receiverId)
+
+        val senderChatUpdate = hashMapOf(
+            "name" to receiverName,
             "lastMessage" to text,
-            "timestamp" to System.currentTimeMillis()
+            "timestamp" to now
         )
 
-        firestore.collection("chats")
-            .document(senderId)
-            .collection("chats")
-            .document(receiverId)
-            .set(chatUpdate)
-            .await()
+        val receiverChatUpdate = hashMapOf(
+            "name" to senderName,
+            "lastMessage" to text,
+            "timestamp" to now
+        )
 
         val message = hashMapOf(
             "senderId" to senderId,
             "text" to text,
-            "timestamp" to System.currentTimeMillis()
+            "timestamp" to now
         )
+
+        // sender side
+        firestore.collection("chats")
+            .document(senderId)
+            .collection("chats")
+            .document(receiverId)
+            .set(senderChatUpdate)
+            .await()
 
         firestore.collection("chats")
             .document(senderId)
@@ -97,8 +112,23 @@ class FirebaseChatRepository @Inject constructor(
             .add(message)
             .await()
 
-        return Result.success(Unit)
+        // receiver side
+        firestore.collection("chats")
+            .document(receiverId)
+            .collection("chats")
+            .document(senderId)
+            .set(receiverChatUpdate)
+            .await()
 
+        firestore.collection("chats")
+            .document(receiverId)
+            .collection("chats")
+            .document(senderId)
+            .collection("messages")
+            .add(message)
+            .await()
+
+        return Result.success(Unit)
     }
 
     private suspend fun getUserDisplayName(userId: String): String {
@@ -132,5 +162,54 @@ class FirebaseChatRepository @Inject constructor(
 
         awaitClose { listener.remove() }
     }
+
+    override suspend fun createChat(receiverId: String): Result<Unit> {
+        val senderId = authRepository.getCurrentUserId()
+
+
+        val existing = firestore.collection("chats")
+            .document(senderId)
+            .collection("chats")
+            .document(receiverId)
+            .get()
+            .await()
+
+        if(existing.exists()) {
+
+        }
+        val now = System.currentTimeMillis()
+        val receiverName = getUserDisplayName(receiverId)
+        val senderName = getUserDisplayName(senderId)
+
+        val senderChat = hashMapOf(
+            "name" to receiverName,
+            "lastMessage" to "",
+            "timestamp" to now
+        )
+        val receiverChat = hashMapOf(
+            "name" to senderName,
+            "lastMessage" to "",
+            "timestamp" to now
+        )
+
+        firestore.collection("chats")
+            .document(senderId)
+            .collection("chats")
+            .document(receiverId)
+            .set(senderChat)
+            .await()
+
+        firestore.collection("chats")
+            .document(receiverId)
+            .collection("chats")
+            .document(senderId)
+            .set(receiverChat)
+            .await()
+
+        return Result.success(Unit)
+    }
+
+
+
 
 }

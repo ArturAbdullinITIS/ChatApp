@@ -19,6 +19,8 @@ class ErrorParser(
             ValidationError.USERNAME_TOO_LONG -> resourceProvider.getString(R.string.username_must_be_at_most_20_characters_error)
             ValidationError.FIREBASE_ERROR -> resourceProvider.getString(R.string.authentication_error_occurred_error)
             null -> ""
+            ValidationError.NO_SUCH_USER -> resourceProvider.getString(R.string.no_such_user_found)
+            ValidationError.CANNOT_CHAT_WITH_YOURSELF -> resourceProvider.getString(R.string.cannot_start_a_chat_with_yourself)
         }
     }
 }

@@ -31,4 +31,7 @@
     <string name="phone_number_signin">Phone number</string>
     <string name="phone_icon_signin">Phone icon</string>
     <string name="enter_your_phone_number_signin">Enter your phone number</string>
+    <string name="enter_user_s_email">Enter user\'s email</string>
+    <string name="no_such_user_found">No such user found.</string>
+    <string name="cannot_start_a_chat_with_yourself">Cannot start a chat with yourself</string>
 </resources>
