@@ -7,6 +7,6 @@ class IsUserLoggedInUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
     operator fun invoke(): Boolean {
-        return authRepository.getCurrentUserId() != null
+        return authRepository.getCurrentUserId().isNotBlank()
     }
 }

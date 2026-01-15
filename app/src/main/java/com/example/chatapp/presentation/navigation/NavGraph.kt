@@ -42,7 +42,7 @@ fun NavGraph(
     isUserLoggedIn: Boolean
 ) {
     val navController = rememberNavController()
-    val startDestination = Screen.SignIn.route
+    val startDestination = if(isUserLoggedIn) Screen.ChatList.route else Screen.SignIn.route
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
     val showBottomBar = currentRoute in listOf(Screen.ChatList.route, Screen.Profile.route)
