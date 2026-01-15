@@ -25,7 +25,7 @@ class FirebaseChatRepository @Inject constructor(
     private val authRepository: AuthRepository
 ) : ChatRepository {
     override fun getChats(): Flow<List<Chat>> = callbackFlow {
-        val userId = authRepository.getCurrentUserId()!!
+        val userId = authRepository.getCurrentUserId()
 
         firestore.collection("chats")
             .document(userId)

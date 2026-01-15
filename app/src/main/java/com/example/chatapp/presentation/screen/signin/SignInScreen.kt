@@ -1,6 +1,5 @@
 package com.example.chatapp.presentation.screen.signin
 
-import android.R.attr.onClick
 import android.R.attr.text
 import android.widget.Space
 import androidx.compose.foundation.layout.Arrangement
@@ -13,9 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -34,7 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.core.wrapExceptionIfDueToDirectBoot
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.work.impl.model.RawWorkInfoDao
 import com.example.chatapp.R
@@ -61,7 +56,7 @@ fun SignInContent(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(state.isSuccess) {
-        if (state.isSuccess) {
+        if(state.isSuccess) {
             onNavigateToChatList()
         }
     }
@@ -78,7 +73,7 @@ fun SignInContent(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically
-            ) {
+            ){
                 BackIcon(
                     onClick = onNavigateToSignUp
                 )
@@ -112,77 +107,25 @@ fun SignInContent(
                 fontWeight = FontWeight.Normal
             )
             Spacer(modifier = Modifier.height(32.dp))
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ),
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 4.dp
-                ),
-                shape = RoundedCornerShape(24.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        EmailAuthButton(
-                            onClick = {
-                                viewModel.processCommand(SignInCommand.ChangeAuthType(AuthType.EMAIL))
-                            },
-                            isSelected = state.authType == AuthType.EMAIL,
-                            modifier = Modifier.weight(1f)
-
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        PhoneAuthButton(
-                            onClick = {
-                                viewModel.processCommand(SignInCommand.ChangeAuthType(AuthType.PHONE))
-                            },
-                            isSelected = state.authType == AuthType.PHONE,
-                            modifier = Modifier.weight(1f)
-
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    when (state.authType) {
-                        AuthType.EMAIL -> {
-                            SignInEmailTextField(
-                                value = state.email,
-                                onValueChange = {
-                                    viewModel.processCommand(SignInCommand.InputEmail(it))
-                                },
-                                errorMessage = state.emailError
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            SignInPasswordTextField(
-                                value = state.password,
-                                onValueChange = {
-                                    viewModel.processCommand(SignInCommand.InputPassword(it))
-                                },
-                                errorMessage = state.passwordError,
-                                isPasswordVisible = state.isPasswordVisible,
-                                onIconClick = {
-                                    viewModel.processCommand(SignInCommand.ChangePasswordVisibility)
-                                }
-                            )
-                        }
-
-                        AuthType.PHONE -> {
-                            SignInPhoneTextField(
-                                value = state.phone,
-                                onValueChange = {
-                                    viewModel.processCommand(SignInCommand.InputPhone(it))
-                                },
-                                errorMessage = state.phoneError
-                            )
-                        }
-                    }
+            SignInEmailTextField(
+                value = state.email,
+                onValueChange = {
+                    viewModel.processCommand(SignInCommand.InputEmail(it))
+                },
+                errorMessage = state.emailError
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            SignInPasswordTextField(
+                value = state.password,
+                onValueChange = {
+                    viewModel.processCommand(SignInCommand.InputPassword(it))
+                },
+                errorMessage = state.passwordError,
+                isPasswordVisible = state.isPasswordVisible,
+                onIconClick = {
+                    viewModel.processCommand(SignInCommand.ChangePasswordVisibility)
                 }
-            }
+            )
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(modifier = Modifier.padding(horizontal = 24.dp))
             Spacer(modifier = Modifier.height(24.dp))
